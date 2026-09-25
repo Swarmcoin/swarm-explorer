@@ -43,11 +43,14 @@ if config_env() == :prod do
   # plug and the LiveView socket go through, so the two can never drift apart.
   config :zcash_explorer, :session_options, signing_salt: session_signing_salt
 
-  # Phoenix wants a bare host here; EXPLORER_SCHEME supplies the scheme.
-  explorer_hostname =
-    System.get_env("EXPLORER_HOSTNAME", "localhost")
-    |> String.replace(~r{^[a-z]+://}, "")
-    |> String.trim_trailing("/")
+  # Phoenix wants bare hosts here; EXPLORER_SCHEME supplies the scheme. One
+  # instance answers under several names (explore.swarm.green,
+  # testnet.explore.swarm.green, and the interim light-wallet name), so this is
+  # a comma-separated list: the first entry is the canonical name in generated
+  # URLs, and every entry is accepted by the LiveView origin check. See
+  # ZcashExplorer.Hostnames for the parsing rules; a bad entry stops the boot.
+  explorer_hostnames = ZcashExplorer.Hostnames.parse(System.get_env("EXPLORER_HOSTNAME"))
+  explorer_hostname = ZcashExplorer.Hostnames.primary(explorer_hostnames)
 
   log_level = System.get_env("LOG_LEVEL", "info")
 
@@ -69,14 +72,15 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base,
     live_view: [signing_salt: live_view_signing_salt],
-    # Derived from EXPLORER_HOSTNAME so the websocket allowlist follows the
+    # Derived from EXPLORER_HOSTNAME so the websocket allowlist follows every
     # domain this instance is actually served under. Upstream hardcoded
-    # zcashblockexplorer.com.
-    check_origin: [
-      "//" <> explorer_hostname,
-      "//localhost",
-      "http://127.0.0.1:" <> (System.get_env("PORT") || "4000")
-    ],
+    # zcashblockexplorer.com; the first SWARM version took exactly one name,
+    # and the proxy had to rewrite the Origin header for any other.
+    check_origin:
+      ZcashExplorer.Hostnames.check_origin(
+        explorer_hostnames,
+        System.get_env("PORT") || "4000"
+      ),
     server: true
 
   # ---------------------------------------------------------------------------
@@ -143,7 +147,7 @@ if config_env() == :prod do
 
   IO.puts(
     "SWARM explorer configured for #{System.get_env("SWARM_NETWORK_NAME", "SwarmTestnet")} " <>
-      "at #{explorer_hostname}, node #{rpc_url}, " <>
+      "at #{Enum.join(explorer_hostnames, ", ")}, node #{rpc_url}, " <>
       "cookie #{System.get_env("ZEBRA_COOKIE_PATH") || "(none)"}, " <>
       "#{length(recipients)} reward destinations"
   )
