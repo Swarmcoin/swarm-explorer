@@ -45,6 +45,12 @@
     font-family: 'Manrope', system-ui, sans-serif;
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
+    /* A column, so the page wrapper (flex-1 in layout/app.html) fills what the
+       network ribbon leaves of the screen: a short page still ends at the
+       bottom of the window instead of scrolling by the ribbon's height. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4 {
@@ -248,6 +254,90 @@
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Which network this is: the ribbon above the header and the chip beside the
+   wordmark (layout/network_ribbon.html, layout/header.html).
+   Plain CSS outside Tailwind's layers, so it is emitted whatever the content
+   scan finds: the statement of which network a page belongs to must never be
+   purged. Testnet is amber, the Honey token, with dark text; the mainnet is a
+   slim dark-green band in the Success token. The ribbon is in normal flow
+   above the sticky header, so it scrolls away and the header, carrying the
+   chip, sticks at the top: nothing is fixed and no offset changes.
+   -------------------------------------------------------------------------- */
+.sw-net-ribbon {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 18px;
+  padding: 8px 16px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: .04em;
+  text-align: center;
+}
+
+.sw-net-ribbon-text { margin: 0; }
+.sw-net-ribbon-text strong { font-weight: 700; letter-spacing: .14em; }
+
+.sw-net-ribbon-link,
+.sw-net-ribbon-link:hover {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.sw-net-ribbon-link:hover { text-decoration-thickness: 2px; }
+
+.sw-net-ribbon-testnet {
+  background: #FFB020;
+  color: #1A0F02;
+}
+
+.sw-net-ribbon-testnet .sw-net-ribbon-link:focus-visible { outline-color: #1A0F02; }
+
+.sw-net-ribbon-mainnet {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 11px;
+  background: #0D2619;
+  color: #BFEAD4;
+  border-bottom: 1px solid rgba(61, 214, 140, .35);
+}
+
+.sw-net-ribbon-mainnet .sw-net-ribbon-text strong { color: #3DD68C; }
+
+.sw-net-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: .14em;
+  white-space: nowrap;
+}
+
+.sw-net-chip-testnet {
+  background: #FFB020;
+  border-color: #FFB020;
+  color: #1A0F02;
+}
+
+.sw-net-chip-mainnet {
+  background: rgba(61, 214, 140, .10);
+  border-color: rgba(61, 214, 140, .45);
+  color: #3DD68C;
 }
 
 /* --------------------------------------------------------------------------

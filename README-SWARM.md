@@ -81,7 +81,7 @@ Everything is configuration. Nothing in this list is hard-coded in the source.
 | Variable | Required | Default | What it does |
 | --- | --- | --- | --- |
 | `SWARM_PROJECT_NAME` | no | `SWARM` | Shown in page titles and headings. |
-| `SWARM_NETWORK_NAME` | no | `SwarmTestnet` | Shown next to the logo and in `/healthz`. Also decides the network profile below, unless `SWARM_NETWORK_KIND` is set. |
+| `SWARM_NETWORK_NAME` | no | `SwarmTestnet` | Shown next to the logo and in `/healthz`. Also decides the network profile (see *Every page names its network* under Design), unless `SWARM_NETWORK_KIND` is set. |
 | `SWARM_NETWORK_KIND` | no | derived | `mainnet` or `testnet`. Set it only when the network name does not say which. |
 | `SWARM_TICKER` | no | `SWM` | Coin ticker appended to every public amount. The project is SWARM; the coin is SWM. |
 | `SWARM_MAX_SUPPLY` | no | `20999987.3152` | Denominator of the "supply issued" figure (`specs/ECONOMICS.md` §3). Must parse as a float, so write `21000000.0`, not `21000000`. |
@@ -165,6 +165,28 @@ changing it:
    bundled from npm and served from this origin. There is no analytics, no
    tracker, no external script or stylesheet, and no browser storage beyond the
    session cookie Phoenix needs.
+4. **Every page names its network.** One image serves the SWARM testnet and
+   the mainnet, and the plain name `explore.swarm.green` serves the testnet,
+   which is how the testnet explorer came to be taken for the mainnet. So the
+   network is stated three times on every page — controller pages, LiveView
+   routes and error pages alike — from the one runtime switch
+   `ZcashExplorer.Swarm.mainnet?/0`, which follows `SWARM_NETWORK_KIND` or
+   the network name:
+
+   | | Test network | Mainnet |
+   | --- | --- | --- |
+   | Ribbon, the first element of `<body>` (`layout/network_ribbon.html`) | amber: **SWARM TESTNET** · test coins, no value — *Mainnet explorer →* | slim dark green: **SWARM MAINNET** — *Testnet explorer →* |
+   | Chip beside the header wordmark, still visible when the ribbon has scrolled away under the sticky header | `TESTNET`, amber | `MAINNET`, green |
+   | Start of every `<title>` (`LayoutView.document_title/1`) | `SWARM Testnet Explorer · …` | `SWARM Mainnet Explorer · …` |
+
+   The cross-links go to `https://mainnet.explore.swarm.green/` and
+   `https://testnet.explore.swarm.green/`, constants in
+   `ZcashExplorer.Swarm`: never the bare `explore.swarm.green`, which may be
+   repointed. A network name that is not positively the mainnet gets the amber
+   ribbon, so a typo can never drop the warning. On the mainnet no page says
+   "test coins" or "no value", and the ribbon's link is the only place the
+   word "testnet" appears; `test/zcash_explorer_web/network_label_test.exs`
+   and `ci/assert-network-label.py` hold every page to that.
 
 Two figures deserve their definitions:
 
@@ -190,7 +212,7 @@ Two figures deserve their definitions:
 | `/address/:address`, `/ua/:address` | Transparent, shielded and unified addresses. A reward destination is badged |
 | `/search?qs=` | Height, block hash, txid or address |
 | `/mempool`, `/nodes`, `/blockchain-info`, `/broadcast` | |
-| `/healthz` | **Liveness.** Always 200 while the web process answers, and makes no RPC call, so a node restart does not kill the container. Readiness is the `node` field: `"ok"` or `"unreachable"` |
+| `/healthz` | **Liveness.** Always 200 while the web process answers, and makes no RPC call, so a node restart does not kill the container. Readiness is the `node` field: `"ok"` or `"unreachable"`. `network` is the configured name (`SwarmTestnet`) and `network_kind` the switch every page's ribbon follows (`testnet` / `mainnet`) |
 | `/api/v1/blockchain-info`, `/api/v1/supply` | JSON |
 
 Removed because Zebra cannot serve them: `/payment-disclosure`, `/vk`,

@@ -104,6 +104,37 @@ defmodule ZcashExplorer.Swarm do
     end
   end
 
+  # The two explorers by their explicit names, deliberately constants rather
+  # than configuration. specs/NETWORKS.md: new links never use the bare
+  # explore.swarm.green, which serves the testnet today and may be repointed at
+  # the mainnet; these two names stay correct either way.
+  @mainnet_explorer_url "https://mainnet.explore.swarm.green/"
+  @testnet_explorer_url "https://testnet.explore.swarm.green/"
+
+  @doc """
+  "Mainnet" or "Testnet": the network kind as a word, for titles and labels.
+
+  Follows `mainnet?/0`, so a network name that is not positively the mainnet
+  reads "Testnet" here too.
+  """
+  @spec network_label() :: String.t()
+  def network_label, do: if(mainnet?(), do: "Mainnet", else: "Testnet")
+
+  @doc """
+  What every page title starts with: "SWARM Testnet Explorer" or
+  "SWARM Mainnet Explorer".
+  """
+  @spec explorer_title() :: String.t()
+  def explorer_title, do: "#{project_name()} #{network_label()} Explorer"
+
+  @doc "The mainnet explorer, which a test network's ribbon links to."
+  @spec mainnet_explorer_url() :: String.t()
+  def mainnet_explorer_url, do: @mainnet_explorer_url
+
+  @doc "The testnet explorer, which the mainnet's ribbon links to."
+  @spec testnet_explorer_url() :: String.t()
+  def testnet_explorer_url, do: @testnet_explorer_url
+
   @doc "Coin ticker for every public amount. The project is SWARM; the coin is SWM."
   def ticker, do: config(:ticker, "SWM")
 

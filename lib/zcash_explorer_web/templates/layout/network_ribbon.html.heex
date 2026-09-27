@@ -1,0 +1,26 @@
+<%!-- The network ribbon: the first element of every page, above the header.
+      It is rendered by root.html, which controller pages, LiveView routes and
+      the errors Phoenix renders itself (config :render_errors) all share.
+
+      Why it exists: on 2026-09-27 the testnet explorer was taken for the
+      mainnet twice, because the plain name explore.swarm.green serves the
+      testnet and the only label was small print. One image serves both
+      networks; ZcashExplorer.Swarm.mainnet?/0 reads which one this is from
+      SWARM_NETWORK_NAME / SWARM_NETWORK_KIND at runtime, and a name that is not
+      positively the mainnet stays a test network, so the amber "no value"
+      warning is dropped only on a positive statement.
+
+      The cross-link names the other network's explorer by its explicit
+      hostname, never the bare explore.swarm.green. data-network-switch marks
+      it so CI can check the rest of the mainnet page for testnet wording. --%>
+<%= if ZcashExplorer.Swarm.mainnet?() do %>
+  <div class="sw-net-ribbon sw-net-ribbon-mainnet" role="note" aria-label="Network" data-network="mainnet">
+    <p class="sw-net-ribbon-text"><strong><%= String.upcase(ZcashExplorer.Swarm.project_name()) %> MAINNET</strong></p>
+    <a class="sw-net-ribbon-link" href={ZcashExplorer.Swarm.testnet_explorer_url()} data-network-switch>Testnet explorer&nbsp;&rarr;</a>
+  </div>
+<% else %>
+  <div class="sw-net-ribbon sw-net-ribbon-testnet" role="note" aria-label="Network" data-network="testnet">
+    <p class="sw-net-ribbon-text"><strong><%= String.upcase(ZcashExplorer.Swarm.project_name()) %> TESTNET</strong> &middot; test coins, no value</p>
+    <a class="sw-net-ribbon-link" href={ZcashExplorer.Swarm.mainnet_explorer_url()} data-network-switch>Mainnet explorer&nbsp;&rarr;</a>
+  </div>
+<% end %>

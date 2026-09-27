@@ -13,6 +13,14 @@
     <span class="font-display font-bold text-[15px] tracking-[.1em]" style="color:var(--sw-text);"><%= @project_name %></span>
     <span class="sw-mono text-[10.5px] tracking-[.2em] pl-2.5 hidden sm:inline"
           style="color:var(--sw-low); border-left:1px solid rgba(255,255,255,.1);">EXPLORER</span>
+    <%!-- The network chip, visible at every width, so the network is still
+          named once the ribbon above has scrolled away: the header is sticky.
+          Same runtime switch as the ribbon; see network_ribbon.html. --%>
+    <%= if ZcashExplorer.Swarm.mainnet?() do %>
+      <span class="sw-net-chip sw-net-chip-mainnet" data-network-chip="mainnet">MAINNET</span>
+    <% else %>
+      <span class="sw-net-chip sw-net-chip-testnet" data-network-chip="testnet">TESTNET</span>
+    <% end %>
   </a>
 
   <nav class="hidden lg:flex gap-5 text-[13.5px] font-medium ml-3" style="color:var(--sw-mid);" aria-label="Sections">

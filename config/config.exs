@@ -23,9 +23,19 @@ import Config
 # `mix test` asserts that this file, read with env: :prod, carries none of them
 # (test/swarm/release_secrets_test.exs) and CI re-checks the built image's
 # sys.config byte by byte (ci/check-release-secrets.py).
+#
+# SWARM change: errors Phoenix renders itself (an unknown path, an exception)
+# get the root layout, so they carry the network ribbon and a network-first
+# title like every other page. layout: false stays: no header or footer, and
+# the root layout needs nothing but the conn, which every error render has.
 config :zcash_explorer, ZcashExplorerWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: ZcashExplorerWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    view: ZcashExplorerWeb.ErrorView,
+    accepts: ~w(html json),
+    root_layout: {ZcashExplorerWeb.LayoutView, :root},
+    layout: false
+  ],
   pubsub_server: ZcashExplorer.PubSub
 
 # SWARM defaults. Every one of these is overridden from the environment at

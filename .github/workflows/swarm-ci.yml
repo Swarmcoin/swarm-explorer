@@ -235,7 +235,7 @@ jobs:
         run: |
           set -euo pipefail
           B=http://127.0.0.1:4000
-          ci/assert-http.sh "$B/healthz" '"status":"ok"' '"network":"SwarmTestnet"'
+          ci/assert-http.sh "$B/healthz" '"status":"ok"' '"network":"SwarmTestnet"' '"network_kind":"testnet"'
           # Home page: branding, the disclaimer, and the SWARM-only tiles.
           ci/assert-http.sh "$B/" \
             'The hive, in the open.' \
@@ -264,6 +264,22 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' $B/vk)" = "404"
           test "$(curl -s -o /dev/null -w '%{http_code}' $B/price)" = "404"
           echo "all page assertions passed"
+
+      # -------------------------------------------------------------------
+      # Every page names its network (specs/NETWORKS.md section 3): the
+      # ribbon as the first element of <body>, a title that starts with the
+      # network, the chip in the header, and a cross-link to the other
+      # network's explorer by its explicit hostname. Controller pages, a
+      # LiveView route, the not-found page and an error Phoenix renders
+      # itself are all covered.
+      # -------------------------------------------------------------------
+      - name: Assert every testnet page states the network
+        run: |
+          set -euo pipefail
+          python3 ci/assert-network-label.py http://127.0.0.1:4000 testnet \
+            / /blocks /blocks/1 "/blocks/$TIP" "/transactions/$COINBASE" \
+            "/address/$MINER_ADDRESS" /mempool /nodes /blockchain-info /broadcast \
+            /metrics/block_count "404:/search?qs=not-a-thing" 404:/no-such-page
 
       # -------------------------------------------------------------------
       # The same image, configured for the mainnet. Two things are proven at
@@ -320,22 +336,46 @@ jobs:
             docker logs explorer-mainnet | tail -n 60; exit 1; }
 
           M=http://127.0.0.1:4002
+          ci/assert-http.sh "$M/healthz" '"network":"SwarmMainnet"' '"network_kind":"mainnet"'
           ci/assert-http.sh "$M/" \
             'The hive, in the open.' \
             'SwarmMainnet' \
             'SWARM Mainnet' \
+            'SWARM MAINNET' \
+            '<title>SWARM Mainnet Explorer' \
             'https://github.com/Swarm-Official'
 
-          # Not one word of it anywhere on the page, in any casing.
+          # Not one word of it anywhere on the page, in any casing. The one
+          # exception is the ribbon's link to the testnet explorer, which is
+          # there to say "testnet": it is marked data-network-switch, there
+          # must be exactly one, and it is cut out before the words are
+          # searched for.
           curl -sS -L --max-time 60 "$M/" > /tmp/mainnet-home.html
+          python3 - <<'PY'
+          import re
+          html = open("/tmp/mainnet-home.html", encoding="utf-8").read()
+          links = re.findall(r"<a [^>]*data-network-switch[^>]*>.*?</a>", html, re.S)
+          assert len(links) == 1, f"expected one link to the testnet explorer, found {len(links)}"
+          assert 'href="https://testnet.explore.swarm.green/"' in links[0], links[0]
+          with open("/tmp/mainnet-home-rest.html", "w", encoding="utf-8") as out:
+              out.write(html.replace(links[0], ""))
+          print("ok: one link to the testnet explorer:", links[0])
+          PY
           for forbidden in 'TEST COINS' 'test coins' 'TESTNET' 'Testnet' 'testnet' 'NO VALUE' 'brs-holding'; do
-            if grep -qiF -- "$forbidden" /tmp/mainnet-home.html; then
+            if grep -qiF -- "$forbidden" /tmp/mainnet-home-rest.html; then
               echo "FAIL: the mainnet home page still contains: $forbidden"
-              grep -inF -- "$forbidden" /tmp/mainnet-home.html | head -n 5
+              grep -inF -- "$forbidden" /tmp/mainnet-home-rest.html | head -n 5
               exit 1
             fi
           done
           echo "ok: the mainnet home page promises nothing about test coins"
+
+          # Every other page too: green ribbon first, title, chip, the one
+          # cross-link, and no test-coin wording anywhere else.
+          python3 ci/assert-network-label.py "$M" mainnet \
+            / /blocks /blocks/1 "/blocks/$TIP" "/transactions/$COINBASE" \
+            "/address/$MINER_ADDRESS" /mempool /nodes /blockchain-info /broadcast \
+            /metrics/block_count "404:/search?qs=zzz-not-a-thing" 404:/no-such-page
 
           # And the test network is untouched by the same image.
           ci/assert-http.sh "http://127.0.0.1:4000/" 'TEST COINS, NO VALUE' 'TEST COINS HAVE NO VALUE'

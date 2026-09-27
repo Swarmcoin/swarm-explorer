@@ -13,13 +13,16 @@ defmodule ZcashExplorerWeb.PageController do
     out to `docker create nighthawkapps/vkrunner …` through MuonTrap, which
     requires a Docker socket inside the web container and a third-party image.
   * `health/2` is new: a liveness endpoint that touches no RPC, for the
-    container healthcheck and the reverse proxy.
+    container healthcheck and the reverse proxy. It names the network twice:
+    `network` is the configured name ("SwarmTestnet") and `network_kind` is
+    the switch every page's ribbon follows ("testnet" / "mainnet").
   """
 
+  # The layout puts the network first ("SWARM Testnet Explorer · …", see
+  # LayoutView.document_title/1); the page part keeps the configured network
+  # name, which specs/NETWORKS.md tells readers to look for in the title.
   def index(conn, _params) do
-    render(conn, "index.html",
-      page_title: "#{Swarm.project_name()} Explorer - search the #{Swarm.network_name()} chain"
-    )
+    render(conn, "index.html", page_title: "Search the #{Swarm.network_name()} chain")
   end
 
   def broadcast(conn, _params) do
@@ -86,6 +89,7 @@ defmodule ZcashExplorerWeb.PageController do
     |> json(%{
       status: "ok",
       network: Swarm.network_name(),
+      network_kind: Atom.to_string(Swarm.network_kind()),
       ticker: Swarm.ticker(),
       node: if(is_nil(height), do: "unreachable", else: "ok"),
       height: height

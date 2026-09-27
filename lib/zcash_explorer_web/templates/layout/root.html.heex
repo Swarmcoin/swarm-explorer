@@ -5,7 +5,10 @@
     <meta http-equiv="X-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="color-scheme" content="dark"/>
-    <%= live_title_tag assigns[:page_title] || " " %>
+    <%!-- The network comes first in every title, "SWARM Testnet Explorer ·
+          Block 343", so a tab, a bookmark or a pasted link names its chain.
+          LayoutView.document_title/1 builds it from the runtime switch. --%>
+    <%= live_title_tag document_title(assigns[:page_title] || error_title(assigns)) %>
     <%!-- SWARM change: upstream pulled DM Serif Display from
           fonts.googleapis.com on every page view. Sora, Manrope and JetBrains
           Mono are bundled from npm and served from this origin, so the page
@@ -16,6 +19,7 @@
     <script defer type="text/javascript" src={"#{Routes.static_path(@conn, "/js/app.js")}"}></script>
 </head>
 <body>
+<%= render ZcashExplorerWeb.LayoutView, "network_ribbon.html", %{} %>
 <div class="sw-hex-field" aria-hidden="true"></div>
 <%= @inner_content %>
 </body>

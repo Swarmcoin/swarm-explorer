@@ -64,6 +64,15 @@ explaining the reason at the point of the change.
      and the not-found page is shown only on a test network. An unrecognised
      network name is treated as a test network, so the warning cannot be
      dropped by a misconfiguration.
+   - Every page names its network, from the same switch: a ribbon as the
+     first element of the page (amber "SWARM TESTNET - test coins, no value"
+     with a link to the mainnet explorer, or a slim green "SWARM MAINNET" with
+     a link to the testnet explorer, both by their explicit hostnames), a
+     TESTNET / MAINNET chip beside the header wordmark, and a title that
+     starts "SWARM Testnet Explorer" / "SWARM Mainnet Explorer". Errors Phoenix
+     renders itself now use the root layout, so they carry the ribbon too.
+     /healthz gained network_kind. Added after the testnet explorer, served on
+     the plain name explore.swarm.green, was taken for the mainnet (2026-09-27).
    - The allocation is read in either shape it is written in: the bare array
      this explorer has always taken, and the {"recipients": [...]} object with
      "numerator" that the SWARM stack's own renderer writes beside the node's
