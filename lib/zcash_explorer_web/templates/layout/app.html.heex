@@ -1,6 +1,6 @@
 <div class="relative z-10 flex flex-1 flex-col">
   <%= render ZcashExplorerWeb.LayoutView, "header.html", assigns %>
-  <div class="flex-1">
+  <div class="flex-1" id="explorer-content" tabindex="-1">
     <%= @inner_content %>
   </div>
   <%= render ZcashExplorerWeb.LayoutView, "footer.html", assigns %>

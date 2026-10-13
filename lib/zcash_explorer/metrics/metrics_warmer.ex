@@ -19,10 +19,10 @@ defmodule ZcashExplorer.Metrics.MetricsWarmer do
   # ignores the warmer result in case of error
   defp handle_result({:error, reason}) do
     Logger.error("Error while warming the metrics cache: #{inspect(reason)}")
-    :ignore
+    ZcashExplorer.Snapshot.result("metrics", {:error, reason})
   end
 
   defp handle_result({:ok, info}) do
-    {:ok, [{"metrics", info}]}
+    ZcashExplorer.Snapshot.result("metrics", {:ok, info})
   end
 end

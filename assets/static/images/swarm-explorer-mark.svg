@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="SWARM">
+      <ellipse cx="21" cy="17" rx="12" ry="6.5" transform="rotate(-28 21 17)" fill="#FFB020"/>
+      <ellipse cx="43" cy="17" rx="12" ry="6.5" transform="rotate(28 43 17)" fill="#FFB020"/>
+      <path d="M32 22 L46 30 L46 48 L32 56 L18 48 L18 30 Z" fill="#FF8A1F"/>
+      <rect x="18" y="35" width="28" height="4" fill="#0A0908"/>
+      <rect x="18" y="44" width="28" height="4" fill="#0A0908"/>
+    </svg>

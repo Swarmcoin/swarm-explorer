@@ -19,10 +19,10 @@ defmodule ZcashExplorer.Nodes.NodeWarmer do
   # ignores the warmer result in case of error
   defp handle_result({:error, reason}) do
     Logger.error("Error while warming the nodes cache: #{inspect(reason)}")
-    :ignore
+    ZcashExplorer.Snapshot.result("zcash_nodes", {:error, reason})
   end
 
   defp handle_result({:ok, nodes}) do
-    {:ok, [{"zcash_nodes", nodes}]}
+    ZcashExplorer.Snapshot.result("zcash_nodes", {:ok, nodes})
   end
 end

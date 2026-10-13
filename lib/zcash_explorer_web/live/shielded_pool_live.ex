@@ -51,7 +51,7 @@ defmodule ZcashExplorerWeb.ShieldedPoolLive do
   end
 
   defp pools do
-    ZcashExplorer.Cache.get("metrics", %{})
+    ZcashExplorer.Snapshot.get("metrics", %{})
     |> Map.get("valuePools")
     |> Swarm.shielded_pools()
   end

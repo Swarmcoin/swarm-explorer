@@ -29,12 +29,12 @@ defmodule ZcashExplorerWeb.PeersLive do
   end
 
   defp figures do
-    peers = ZcashExplorer.Cache.get("zcash_nodes")
+    peers = ZcashExplorer.Snapshot.get("zcash_nodes")
 
     [
       key: "PEERS",
       value: if(is_list(peers), do: Integer.to_string(length(peers)), else: "—"),
-      note: "peers of this node",
+      note: ZcashExplorer.Snapshot.note("zcash_nodes", if(peers == [], do: "No peers reported by this node", else: "Peers reported by this node")),
       accent: MetricCard.muted()
     ]
   end

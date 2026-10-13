@@ -1,29 +1,18 @@
 defmodule ZcashExplorer.Mempool.MempoolWarmer do
-  alias ZcashExplorer.Rpc
+  alias ZcashExplorer.{Rpc, Snapshot}
   use Cachex.Warmer
-  require Logger
+  def interval, do: :timer.seconds(5)
+  def execute(_state), do: Snapshot.result("raw_mempool", normalize(Rpc.getrawmempool(true)))
 
-  @doc """
-  Returns the interval for this warmer.
-  """
-  def interval,
-    do: :timer.seconds(5)
-
-  @doc """
-  Executes this cache warmer.
-  """
-  def execute(_state) do
-    Rpc.getrawmempool(true) |> handle_result()
+  def normalize({:ok, rows}) when is_map(rows) do
+    if Enum.all?(rows, fn {id, info} -> is_binary(id) and is_map(info) end) do
+      {:ok, Enum.map(rows, fn {id, info} -> %{"txid" => id, "info" => info} end) |> Enum.sort_by(& &1["txid"])}
+    else
+      {:error, :invalid_mempool}
+    end
   end
-
-  # ignores the warmer result in case of error
-  defp handle_result({:error, reason}) do
-    Logger.error("Error while warming the mempool cache: #{inspect(reason)}")
-    :ignore
+  def normalize({:ok, rows}) when is_list(rows) do
+    if Enum.all?(rows, &is_binary/1), do: {:ok, Enum.map(rows, &%{"txid" => &1, "info" => %{}})}, else: {:error, :invalid_mempool}
   end
-
-  defp handle_result({:ok, raw_mempool}) do
-    mempool_info = Enum.map(raw_mempool, fn {k, v} -> %{"txid" => k, "info" => v} end)
-    {:ok, [{"raw_mempool", mempool_info}]}
-  end
+  def normalize(_), do: {:error, :unavailable}
 end

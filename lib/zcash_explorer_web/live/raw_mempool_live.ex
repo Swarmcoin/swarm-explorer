@@ -1,67 +1,28 @@
 defmodule ZcashExplorerWeb.RawMempoolLive do
   use ZcashExplorerWeb, :live_view
-  import Phoenix.LiveView.Helpers
-  @impl true
   def render(assigns) do
     ~L"""
-    <div class="shadow overflow-hidden border-gray-200 rounded-lg overflow-x-auto">
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
-         <th scope="col" class="px-6 py-3">Tx ID</th>
-         <th scope="col" class="px-4 py-3">Block</th>
-          <th scope="col" class="px-4 py-3">Time</th>
-          <th scope="col" class="px-4 py-3">Fee</th>
-          <th scope="col" class="px-4 py-3">Size</th>
-        </tr>
-       </thead>
-       <tbody class="bg-white-500 divide-y divide-gray-200">
-       <%= for tx <- @raw_mempool do %>
-        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-500 animate-pulse dark:text-white dark:hover:text-white">
-          <a href='/transactions/<%= tx["txid"] %>'>
-               <%= tx["txid"] %>
-          </a>
-        </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-            <%= tx["info"]["height"] %>
-          </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-MEDI">
-          <%= ZcashExplorerWeb.BlockView.mined_time_rel(tx["info"]["time"]) %>
-        </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-         <%= ZcashExplorerWeb.TransactionView.format_zec(tx["info"]["fee"]) %>
-        </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-          <%= tx["info"]["size"] %>
-        </td>
-       </tr>
+    <section class="sw-card sw-data-panel">
+      <div class="sw-panel-heading"><h2>Pending transactions</h2><span class="sw-caption"><%= @note %></span></div>
+      <%= cond do %>
+        <% is_nil(@rows) -> %><div class="sw-empty"><span aria-hidden="true">◌</span><h3>Mempool data is unavailable</h3><p>Waiting for a fresh node response. This does not mean the mempool is empty.</p></div>
+        <% @rows == [] -> %><div class="sw-empty"><span aria-hidden="true">✓</span><h3>Nothing waiting right now</h3><p>The node’s mempool is empty. New pending transactions appear here automatically.</p><a href="/blocks" class="sw-text-link">Explore confirmed blocks →</a></div>
+        <% true -> %><div class="sw-table-scroll" tabindex="0" role="region" aria-label="Pending transactions"><table><thead><tr><th>Transaction ID</th><th>Entry height</th><th>Seen at</th><th>Fee</th><th>Bytes</th></tr></thead><tbody>
+        <%= for tx <- @rows do %><tr><td class="sw-mono"><a href="/transactions/<%= tx["txid"] %>"><%= tx["txid"] %></a></td><td><%= tx["info"]["height"] || "—" %></td><td><%= time(tx["info"]["time"]) %></td><td><%= ZcashExplorerWeb.Number.decimal(tx["info"]["fee"], 8) %></td><td><%= tx["info"]["size"] || "—" %></td></tr><% end %>
+        </tbody></table></div>
       <% end %>
-    </tbody>
-    </table>
-    </div>
+    </section>
     """
   end
-
-  @impl true
-  def mount(_params, _session, socket) do
+  def mount(_, _, socket) do
     if connected?(socket), do: Process.send_after(self(), :update, 5000)
-
-    case ZcashExplorer.Cache.fetch("raw_mempool") do
-      {:ok, mempool} ->
-        {:ok, assign(socket, :raw_mempool, mempool)}
-
-      {:error, _reason} ->
-        # The template iterates this assign, so a cold cache has to fall back to
-        # an empty list; "loading..." raised Protocol.UndefinedError on /mempool.
-        {:ok, assign(socket, :raw_mempool, [])}
-    end
+    {:ok, assign(socket, figures())}
   end
-
-  @impl true
   def handle_info(:update, socket) do
     Process.send_after(self(), :update, 5000)
-    mempool = ZcashExplorer.Cache.get("raw_mempool", [])
-    {:noreply, assign(socket, :raw_mempool, mempool)}
+    {:noreply, assign(socket, figures())}
   end
+  defp figures, do: [rows: ZcashExplorer.Snapshot.get("raw_mempool", nil, 20), note: ZcashExplorer.Snapshot.note("raw_mempool", "Node response")]
+  defp time(n) when is_integer(n), do: ZcashExplorerWeb.BlockView.mined_time_rel(n)
+  defp time(_), do: "—"
 end

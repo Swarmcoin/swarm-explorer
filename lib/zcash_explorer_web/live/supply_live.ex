@@ -27,7 +27,7 @@ defmodule ZcashExplorerWeb.SupplyLive do
   end
 
   defp figures do
-    issued = get_in(ZcashExplorer.Cache.get("metrics", %{}), ["chainSupply", "chainValue"])
+    issued = get_in(ZcashExplorer.Snapshot.get("metrics", %{}), ["chainSupply", "chainValue"])
 
     [
       key: "SUPPLY ISSUED",
@@ -45,7 +45,7 @@ defmodule ZcashExplorerWeb.SupplyLive do
   defp note(_), do: "of #{format(ZcashExplorer.Swarm.max_supply(), 4)} #{ZcashExplorer.Swarm.ticker()}"
 
   defp format(value, decimals) when is_number(value),
-    do: :erlang.float_to_binary(value + 0.0, [:compact, {:decimals, decimals}])
+    do: ZcashExplorerWeb.Number.decimal(value, decimals)
 
   defp format(_, _), do: "—"
 end

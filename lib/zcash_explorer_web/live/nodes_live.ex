@@ -1,57 +1,26 @@
 defmodule ZcashExplorerWeb.NodesLive do
   use ZcashExplorerWeb, :live_view
-  import Phoenix.LiveView.Helpers
-  @impl true
   def render(assigns) do
     ~L"""
-    <div class="shadow overflow-hidden border-gray-200 rounded-lg overflow-x-auto">
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-    <tr>
-         <th scope="col" class="px-6 py-3">Address</th>
-         <th scope="col" class="px-4 py-3">Version</th>
-          <th scope="col" class="px-4 py-3">Block Height</th>
-        </tr>
-       </thead>
-       <tbody class="bg-white-500 divide-y divide-gray-200">
-       <%= for node <- @zcash_nodes do %>
-       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-500 animate-pulse dark:text-white dark:hover:text-white">
-       <%= node["addr"] %>
-        </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-            <%= node["subver"] %>
-        </td>
-        <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-            <%= node["synced_blocks"] %>
-        </td>
-       </tr>
+    <section class="sw-card sw-data-panel">
+      <div class="sw-panel-heading"><h2>Peers reported by this node</h2><span class="sw-caption"><%= @note %></span></div>
+      <%= cond do %>
+        <% is_nil(@nodes) -> %><div class="sw-empty"><span aria-hidden="true">◌</span><h3>Peer data is unavailable</h3><p>The node has not supplied a fresh peer list. Retrying automatically.</p></div>
+        <% @nodes == [] -> %><div class="sw-empty sw-empty-warning"><span aria-hidden="true">⬡</span><h3>No peers reported</h3><p>The node returned an empty peer list. This is a node connectivity or reporting condition, not a count of the entire network.</p><p>New blocks alone do not prove that peer connections are healthy.</p></div>
+        <% true -> %><div class="sw-table-scroll" tabindex="0" role="region" aria-label="Peer connections"><table><thead><tr><th>Address</th><th>Software</th><th>Reported height</th></tr></thead><tbody>
+        <%= for node <- @nodes do %><tr><td class="sw-mono"><%= node["addr"] || "Unavailable" %></td><td><%= node["subver"] || "Unavailable" %></td><td><%= node["synced_blocks"] || node["startingheight"] || "Unavailable" %></td></tr><% end %>
+        </tbody></table></div>
       <% end %>
-    </tbody>
-    </table>
-    </div>
+    </section>
     """
   end
-
-  @impl true
-  def mount(_params, _session, socket) do
+  def mount(_, _, socket) do
     if connected?(socket), do: Process.send_after(self(), :update, 5000)
-
-    case ZcashExplorer.Cache.fetch("zcash_nodes") do
-      {:ok, zcash_nodes} ->
-        {:ok, assign(socket, :zcash_nodes, zcash_nodes)}
-
-      {:error, _reason} ->
-        # The template iterates this assign, so a cold cache has to fall back to
-        # an empty list; "loading..." raised Protocol.UndefinedError on /mempool.
-        {:ok, assign(socket, :zcash_nodes, [])}
-    end
+    {:ok, assign(socket, figures())}
   end
-
-  @impl true
   def handle_info(:update, socket) do
     Process.send_after(self(), :update, 5000)
-    zcash_nodes = ZcashExplorer.Cache.get("zcash_nodes", [])
-    {:noreply, assign(socket, :zcash_nodes, zcash_nodes)}
+    {:noreply, assign(socket, figures())}
   end
+  defp figures, do: [nodes: ZcashExplorer.Snapshot.get("zcash_nodes"), note: ZcashExplorer.Snapshot.note("zcash_nodes", "Node response")]
 end

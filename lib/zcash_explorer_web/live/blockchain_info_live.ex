@@ -63,13 +63,7 @@ defmodule ZcashExplorerWeb.BlockChainInfoLive do
   def mount(_params, _session, socket) do
     if connected?(socket), do: Process.send_after(self(), :update, 5000)
 
-    case ZcashExplorer.Cache.fetch("metrics") do
-      {:ok, info} ->
-        {:ok, assign(socket, assigns_for(info))}
-
-      {:error, _reason} ->
-        {:ok, assign(socket, assigns_for(%{}))}
-    end
+    {:ok, assign(socket, assigns_for(ZcashExplorer.Snapshot.get("metrics", %{})))}
   end
 
   defp assigns_for(info) do
@@ -85,7 +79,7 @@ defmodule ZcashExplorerWeb.BlockChainInfoLive do
   @impl true
   def handle_info(:update, socket) do
     Process.send_after(self(), :update, 15000)
-    {:noreply, assign(socket, assigns_for(ZcashExplorer.Cache.get("metrics", %{})))}
+    {:noreply, assign(socket, assigns_for(ZcashExplorer.Snapshot.get("metrics", %{})))}
   end
 
 end

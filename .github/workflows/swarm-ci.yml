@@ -5,7 +5,7 @@ name: SWARM explorer CI
 # about the fork is proven here or not at all.
 on:
   push:
-    branches: [swarm-testnet]
+    branches: [swarm-testnet, codex/explorer-redesign-20261013]
   workflow_dispatch:
 
 concurrency:

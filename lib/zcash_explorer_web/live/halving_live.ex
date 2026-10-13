@@ -26,7 +26,7 @@ defmodule ZcashExplorerWeb.HalvingLive do
   end
 
   defp figures do
-    case ZcashExplorer.Cache.field("metrics", "blocks") do
+    case ZcashExplorer.Snapshot.field("metrics", "blocks") do
       height when is_integer(height) ->
         [
           key: "NEXT HALVING",

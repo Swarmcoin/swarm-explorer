@@ -1,53 +1,25 @@
-<header class="sticky top-0 z-20 flex items-center gap-6 px-6 py-4 md:px-10"
-        style="border-bottom:1px solid var(--sw-hairline); background:rgba(10,9,8,.8); backdrop-filter:blur(12px);">
-  <a href="/" class="flex items-center gap-2.5 no-underline">
-    <%!-- The hive bee: two honey wings over a striped hex body, from the
-          Swarm Style Guide explorer header. --%>
-    <svg width="26" height="26" viewBox="0 0 64 64" fill="none" role="img" aria-label={"#{@project_name} explorer"}>
-      <ellipse cx="21" cy="17" rx="12" ry="6.5" transform="rotate(-28 21 17)" fill="#FFB020"/>
-      <ellipse cx="43" cy="17" rx="12" ry="6.5" transform="rotate(28 43 17)" fill="#FFB020"/>
-      <path d="M32 22 L46 30 L46 48 L32 56 L18 48 L18 30 Z" fill="#FF8A1F"/>
-      <rect x="18" y="35" width="28" height="4" fill="#0A0908"/>
-      <rect x="18" y="44" width="28" height="4" fill="#0A0908"/>
-    </svg>
-    <span class="font-display font-bold text-[15px] tracking-[.1em]" style="color:var(--sw-text);"><%= @project_name %></span>
-    <span class="sw-mono text-[10.5px] tracking-[.2em] pl-2.5 hidden sm:inline"
-          style="color:var(--sw-low); border-left:1px solid rgba(255,255,255,.1);">EXPLORER</span>
-    <%!-- The network chip, visible at every width, so the network is still
-          named once the ribbon above has scrolled away: the header is sticky.
-          Same runtime switch as the ribbon; see network_ribbon.html. --%>
+<a href="#explorer-content" class="sw-skip">Skip to explorer content</a>
+<header class="sw-header">
+  <a href="/" class="sw-brand" aria-label="SWARM explorer home">
+    <img src="/images/swarm-explorer-mark.svg" width="36" height="36" alt=""/>
+    <span>SWARM<small>EXPLORER</small></span>
     <%= if ZcashExplorer.Swarm.mainnet?() do %>
       <span class="sw-net-chip sw-net-chip-mainnet" data-network-chip="mainnet">MAINNET</span>
     <% else %>
       <span class="sw-net-chip sw-net-chip-testnet" data-network-chip="testnet">TESTNET</span>
     <% end %>
   </a>
-
-  <nav class="hidden lg:flex gap-5 text-[13.5px] font-medium ml-3" style="color:var(--sw-mid);" aria-label="Sections">
-    <a href="/blocks" class="no-underline" style="color:inherit;">Blocks</a>
-    <a href="/mempool" class="no-underline" style="color:inherit;">Mempool</a>
-    <a href="/blockchain-info" class="no-underline" style="color:inherit;">Shielded pools</a>
-    <a href="/nodes" class="no-underline" style="color:inherit;">Peers</a>
-    <a href="/broadcast" class="no-underline" style="color:inherit;">Broadcast</a>
+  <nav class="sw-nav" aria-label="Sections">
+    <a href="/">Overview</a><a href="/blocks">Blocks</a><a href="/mempool">Mempool</a>
+    <a href="/blockchain-info">Shielded pools</a><a href="/nodes">Peers</a><a href="/broadcast">Broadcast</a>
   </nav>
-
-  <div class="ml-auto flex items-center gap-3">
-    <form action="/search" class="sw-search hidden md:flex" style="padding:4px 4px 4px 12px; max-width:340px;">
-      <label for="search" class="sr-only">Search a height, block hash, transaction id or transparent address</label>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="11" cy="11" r="6.5" stroke="#7d746a" stroke-width="1.8"/>
-        <path d="M16 16l4 4" stroke="#7d746a" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      <input id="search" name="qs" type="search" placeholder="height / hash / address">
-    </form>
-    <span class="sw-pill sw-pill-neutral hidden sm:inline-flex"><%= @network_name %></span>
-  </div>
+  <a class="sw-home-link" href="https://swarm.green" rel="noreferrer">swarm.green ↗</a>
 </header>
-
-<%!-- Mobile search: the header form is hidden below md, so the box the style
-      guide puts in the hero also has to work as the only search on a phone. --%>
-<form action="/search" class="sw-search md:hidden mx-6 mt-4">
-  <label for="search-mobile" class="sr-only">Search</label>
-  <input id="search-mobile" name="qs" type="search" placeholder="height / hash / address">
-  <button type="submit" class="sw-btn">Search</button>
-</form>
+<div class="sw-utility">
+  <span class="sw-utility-label">Explore <%= @network_name %></span>
+  <form action="/search" class="sw-search sw-header-search" role="search">
+    <label for="search" class="sr-only">Search a height, hash, transaction or address</label>
+    <input id="search" name="qs" type="search" required placeholder="Height, hash, transaction or address" autocomplete="off" spellcheck="false"/>
+    <button type="submit" class="sw-btn sw-btn-quiet">Search <span aria-hidden="true">↗</span></button>
+  </form>
+</div>

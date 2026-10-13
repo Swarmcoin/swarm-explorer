@@ -15,11 +15,11 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
   @impl true
   def render(assigns) do
     ~L"""
-    <div class="sw-card overflow-hidden">
+    <div class="sw-card sw-feed overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--sw-hairline);">
         <h3 class="font-display text-sm font-semibold">Latest transactions</h3>
         <span class="sw-mono text-[10.5px] tracking-[.14em]" style="color:var(--sw-honey);">
-          <span class="sw-live-dot inline-block align-middle mr-2"></span>LIVE
+          <span class="sw-live-dot inline-block align-middle mr-2"></span>AUTO REFRESH
         </span>
       </div>
 
@@ -27,7 +27,7 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
         <p class="px-5 py-6 text-sm" style="color:var(--sw-mid);">Waiting for the node&hellip;</p>
       <% end %>
 
-      <%= for tx <- @transaction_cache do %>
+      <%= for tx <- Enum.take(@transaction_cache, 8) do %>
         <a href="<%= "/transactions/#{tx["txid"]}" %>"
            class="flex items-center gap-3 px-5 py-3 no-underline"
            style="border-bottom:1px solid var(--sw-hairline-soft);">
@@ -40,7 +40,7 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
 
           <span class="sw-mono text-[11.5px] shrink-0 <%= if tx["masked"], do: "sw-masked" %>"
                 style="<%= unless tx["masked"], do: "color:var(--sw-clear-lt);" %>">
-            <%= tx["amount"] %><%= unless tx["masked"] do %> <%= @ticker %><% end %>
+            <%= tx["amount"] %><%= unless tx["masked"] do %> <%= @ticker %><small class="block text-right" style="color:var(--sw-mid);font-size:9px;">public outputs</small><% end %>
           </span>
 
           <span class="<%= tx["pill_class"] %> shrink-0"><%= tx["state"] %></span>
