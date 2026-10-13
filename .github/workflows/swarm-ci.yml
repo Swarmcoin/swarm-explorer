@@ -343,7 +343,7 @@ jobs:
             'SWARM Mainnet' \
             'SWARM MAINNET' \
             '<title>SWARM Mainnet Explorer' \
-            'https://github.com/Swarm-Official'
+            'https://github.com/Swarmcoin/swarm-explorer'
 
           # Not one word of it anywhere on the page, in any casing. The one
           # exception is the ribbon's link to the testnet explorer, which is

@@ -60,7 +60,7 @@ connectionNote.className = 'sw-connection-note'; connectionNote.setAttribute('ro
 connectionNote.textContent = 'Live updates interrupted. Displayed readings may be out of date.'
 document.body.append(connectionNote)
 function updateConnection() {
-  const disconnected = !navigator.onLine || Boolean(document.querySelector('.phx-disconnected'))
+  const disconnected = !navigator.onLine || Boolean(document.querySelector('.phx-disconnected, .phx-error'))
   document.body.classList.toggle('sw-offline', disconnected)
 }
 window.addEventListener('online', updateConnection)
