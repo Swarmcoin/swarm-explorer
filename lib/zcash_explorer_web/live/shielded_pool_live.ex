@@ -23,7 +23,7 @@ defmodule ZcashExplorerWeb.ShieldedPoolLive do
       </div>
 
       <%= if @pools == [] do %>
-        <p class="mt-3 text-sm" style="color:var(--sw-mid);">The node reports no value pools yet.</p>
+        <p class="mt-3 text-sm" style="color:var(--sw-mid);">Pool data is not available yet.</p>
       <% else %>
         <div class="mt-3 flex flex-wrap gap-2.5">
           <%= for {id, value} <- @pools do %>
