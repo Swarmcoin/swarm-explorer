@@ -28,7 +28,7 @@ defmodule ZcashExplorerWeb.RecentBlocksLive do
         <p class="px-5 py-6 text-sm" style="color:var(--sw-mid);">Waiting for the node&hellip;</p>
       <% end %>
 
-      <%= for block <- Enum.take(@block_cache, 8) do %>
+      <%= for block <- Enum.take(@block_cache, 6) do %>
         <a href="<%= "/blocks/#{block["height"]}" %>"
            class="flex items-center gap-4 px-5 py-3 no-underline"
            style="border-bottom:1px solid var(--sw-hairline-soft);">

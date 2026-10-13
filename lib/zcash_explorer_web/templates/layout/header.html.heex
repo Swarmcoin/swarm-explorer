@@ -1,25 +1,35 @@
 <a href="#explorer-content" class="sw-skip">Skip to explorer content</a>
 <header class="sw-header">
   <a href="/" class="sw-brand" aria-label="SWARM explorer home">
-    <img src="/images/swarm-explorer-mark.svg" width="36" height="36" alt=""/>
+    <img src="/images/swarm-product-mark.svg" width="52" height="26" alt=""/>
     <span>SWARM<small>EXPLORER</small></span>
+  </a>
+  <div class="sw-network-label">
     <%= if ZcashExplorer.Swarm.mainnet?() do %>
       <span class="sw-net-chip sw-net-chip-mainnet" data-network-chip="mainnet">MAINNET</span>
     <% else %>
       <span class="sw-net-chip sw-net-chip-testnet" data-network-chip="testnet">TESTNET</span>
     <% end %>
-  </a>
+    <span>Proof of work</span>
+  </div>
+  <span class="sw-nav-label">EXPLORE THE CHAIN</span>
   <nav class="sw-nav" aria-label="Sections">
-    <a href="/">Overview</a><a href="/blocks">Blocks</a><a href="/mempool">Mempool</a>
-    <a href="/blockchain-info">Shielded pools</a><a href="/nodes">Peers</a><a href="/broadcast">Broadcast</a>
+    <a href="/"><span aria-hidden="true">◈</span>Overview</a>
+    <a href="/blocks"><span aria-hidden="true">⬡</span>Blocks</a>
+    <a href="/mempool"><span aria-hidden="true">≋</span>Mempool</a>
+    <a href="/blockchain-info"><span aria-hidden="true">◇</span>Shielded pools</a>
+    <a href="/nodes"><span aria-hidden="true">⠿</span>Peers</a>
+    <a href="/broadcast"><span aria-hidden="true">↗</span>Broadcast</a>
   </nav>
-  <a class="sw-home-link" href="https://swarm.green" rel="noreferrer">swarm.green ↗</a>
+  <div class="sw-sidebar-bottom"><p>Public chain.<br/><strong>Privacy by default.</strong></p><a class="sw-home-link" href="https://swarm.green" rel="noreferrer">swarm.green <span aria-hidden="true">↗</span></a></div>
 </header>
+<%= if @conn.request_path != "/" do %>
 <div class="sw-utility">
-  <span class="sw-utility-label">Explore <%= @network_name %></span>
+  <a href="/" class="sw-utility-label">Explorer / <%= @network_name %></a>
   <form action="/search" class="sw-search sw-header-search" role="search">
     <label for="search" class="sr-only">Search a height, hash, transaction or address</label>
     <input id="search" name="qs" type="search" required placeholder="Height, hash, transaction or address" autocomplete="off" spellcheck="false"/>
-    <button type="submit" class="sw-btn sw-btn-quiet">Search <span aria-hidden="true">↗</span></button>
+    <button type="submit" class="sw-btn sw-btn-quiet">Search ↗</button>
   </form>
 </div>
+<% end %>

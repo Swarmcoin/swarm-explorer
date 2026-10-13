@@ -30,8 +30,8 @@ defmodule ZcashExplorerWeb.HalvingLive do
       height when is_integer(height) ->
         [
           key: "NEXT HALVING",
-          value: "#" <> Integer.to_string(ZcashExplorer.Swarm.next_halving_height(height)),
-          note: "#{ZcashExplorer.Swarm.blocks_to_halving(height)} blocks to go",
+          value: "#" <> ZcashExplorerWeb.Number.decimal(ZcashExplorer.Swarm.next_halving_height(height), 0),
+          note: "#{ZcashExplorerWeb.Number.decimal(ZcashExplorer.Swarm.blocks_to_halving(height), 0)} blocks to go",
           accent: MetricCard.honey()
         ]
 

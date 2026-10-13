@@ -18,16 +18,17 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
     <div class="sw-card sw-feed overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--sw-hairline);">
         <h3 class="font-display text-sm font-semibold">Latest transactions</h3>
-        <span class="sw-mono text-[10.5px] tracking-[.14em]" style="color:var(--sw-honey);">
-          <span class="sw-live-dot inline-block align-middle mr-2"></span>AUTO REFRESH
-        </span>
+        <button class="sw-filter-button" type="button" phx-click="filter" aria-pressed="<%= @hide_coinbase %>">Hide coinbase</button>
       </div>
 
       <%= if @transaction_cache == [] do %>
         <p class="px-5 py-6 text-sm" style="color:var(--sw-mid);">Waiting for the node&hellip;</p>
       <% end %>
 
-      <%= for tx <- Enum.take(@transaction_cache, 8) do %>
+      <%= if @hide_coinbase and @transaction_cache != [] and filtered(@transaction_cache, true) == [] do %>
+        <div class="sw-filter-empty"><span aria-hidden="true">◇</span><strong>No other transactions in this sample</strong><p>The recent blocks contain only coinbase transactions. Show coinbase to see the mining rewards.</p></div>
+      <% end %>
+      <%= for tx <- Enum.take(filtered(@transaction_cache, @hide_coinbase), 6) do %>
         <a href="<%= "/transactions/#{tx["txid"]}" %>"
            class="flex items-center gap-3 px-5 py-3 no-underline"
            style="border-bottom:1px solid var(--sw-hairline-soft);">
@@ -53,7 +54,7 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket), do: Process.send_after(self(), :update, @refresh)
-    {:ok, assign(socket, transaction_cache: txs(), ticker: Swarm.ticker())}
+    {:ok, assign(socket, transaction_cache: txs(), ticker: Swarm.ticker(), hide_coinbase: false)}
   end
 
   @impl true
@@ -62,5 +63,10 @@ defmodule ZcashExplorerWeb.RecentTransactionsLive do
     {:noreply, assign(socket, :transaction_cache, txs())}
   end
 
+  @impl true
+  def handle_event("filter", _, socket), do: {:noreply, assign(socket, hide_coinbase: !socket.assigns.hide_coinbase)}
+
+  def filtered(txs, true), do: Enum.reject(txs, &(&1["state"] == "COINBASE"))
+  def filtered(txs, false), do: txs
   defp txs, do: ZcashExplorer.Cache.get("transaction_cache", [])
 end

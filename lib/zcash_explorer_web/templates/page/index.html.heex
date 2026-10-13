@@ -1,28 +1,15 @@
 <main class="sw-overview">
-  <section class="sw-hero" aria-labelledby="overview-title">
-    <div class="sw-hero-copy">
-      <p class="sw-eyebrow"><span class="sw-hex-icon" aria-hidden="true">⬡</span> THE SWARM EXPLORER</p>
-      <h1 id="overview-title">The hive,<br/><span>in the open.</span></h1>
-      <p class="sw-hero-lead">Follow the chain. Find your transaction.<br/>See what’s public. Understand what stays shielded.</p>
-      <form action="/search" class="sw-search sw-hero-search" role="search">
-        <label for="hero-search" class="sr-only">Search a block height, block hash, transaction id or address</label>
-        <input id="hero-search" name="qs" type="search" required placeholder="Search the SWARM chain…" autocomplete="off" spellcheck="false"/>
-        <button type="submit" class="sw-btn">Explore <span aria-hidden="true">→</span></button>
-      </form>
-      <p class="sw-search-hint">BLOCK HEIGHT <span> / </span> TRANSACTION ID <span> / </span> HASH <span> / </span> ADDRESS</p>
-      <%= unless ZcashExplorer.Swarm.mainnet?() do %><p class="sw-test-note"><%= @network_name %> &middot; TEST COINS, NO VALUE</p><% end %>
-    </div>
-    <aside class="sw-hero-art" aria-label="SWARM chain illustration">
-      <div class="sw-orbit sw-orbit-one"></div><div class="sw-orbit sw-orbit-two"></div>
-      <div class="sw-hive-mark"><img src="/images/swarm-explorer-mark.svg" width="108" height="108" alt="SWARM"/></div>
-      <div class="sw-art-label sw-art-label-top">PROOF OF WORK</div>
-      <div class="sw-art-label sw-art-label-bottom">PUBLIC CHAIN · SHIELDED TRANSFERS</div>
-      <span class="sw-art-node sw-art-node-one" aria-hidden="true">⬡</span><span class="sw-art-node sw-art-node-two" aria-hidden="true">⬡</span>
-    </aside>
+  <section class="sw-dashboard-head" aria-labelledby="overview-title">
+    <div><p class="sw-eyebrow">SWARM / <%= @network_name %></p><h1 id="overview-title">Network overview<span>.</span></h1><p class="sw-dashboard-lead">Blocks, transactions and the state of the chain.</p></div>
+    <form action="/search" class="sw-search sw-dashboard-search" role="search">
+      <label for="hero-search" class="sr-only">Search a block height, block hash, transaction id or address</label>
+      <span class="sw-search-symbol" aria-hidden="true">⌕</span><input id="hero-search" name="qs" type="search" required placeholder="Block, transaction or address" autocomplete="off" spellcheck="false"/>
+      <kbd aria-hidden="true">/</kbd><button type="submit" class="sw-btn">Search ↗</button>
+    </form>
   </section>
-
+  <%= unless ZcashExplorer.Swarm.mainnet?() do %><p class="sw-test-note"><%= @network_name %> &middot; TEST COINS, NO VALUE</p><% end %>
   <section aria-labelledby="network-title" class="sw-network-section">
-    <div class="sw-section-heading"><div><p class="sw-eyebrow">01 / NETWORK</p><h2 id="network-title">At a glance</h2></div><span class="sw-caption">Readings from the explorer’s node · refresh automatically</span></div>
+    <div class="sw-section-heading"><div><h2 id="network-title">Network snapshot</h2></div><span class="sw-caption">Node readings · updated automatically</span></div>
     <div class="sw-metrics-grid">
       <%= live_render(@conn, ZcashExplorerWeb.BlockCountLive) %>
       <%= live_render(@conn, ZcashExplorerWeb.DifficultyLive) %>
@@ -34,11 +21,12 @@
       <%= live_render(@conn, ZcashExplorerWeb.BlockChainSizeLive) %>
     </div>
   </section>
-  <section class="sw-pool-section" aria-label="Shielded value pools"><%= live_render(@conn, ZcashExplorerWeb.ShieldedPoolLive) %></section>
+  <section class="sw-history-section" aria-label="Recent block activity"><%= live_render(@conn, ZcashExplorerWeb.BlockActivityLive) %></section>
   <section aria-labelledby="activity-title">
-    <div class="sw-section-heading"><div><p class="sw-eyebrow">02 / ACTIVITY</p><h2 id="activity-title">Written to the chain</h2></div><a href="/blocks" class="sw-text-link">Browse all blocks →</a></div>
+    <div class="sw-section-heading"><div><h2 id="activity-title">Latest activity</h2></div><a href="/blocks" class="sw-text-link">Browse all blocks →</a></div>
     <div class="sw-activity-grid"><%= live_render(@conn, ZcashExplorerWeb.RecentBlocksLive) %><%= live_render(@conn, ZcashExplorerWeb.RecentTransactionsLive) %></div>
   </section>
+  <section class="sw-pool-section" aria-label="Shielded value pools"><%= live_render(@conn, ZcashExplorerWeb.ShieldedPoolLive) %></section>
   <section class="sw-explainer" aria-label="Reading the explorer">
     <div><span class="sw-pill sw-pill-shielded">SHIELDED</span><h3>Privacy has a clear boundary.</h3><p>Blocks and transaction IDs are public. Shielded transfers hide their sender, receiver and amount; the explorer cannot reveal them.</p></div>
     <div><span class="sw-pill sw-pill-revealed">REVEALED</span><h3>Only public data is shown.</h3><p>Transparent inputs and outputs are visible on chain. A displayed public output total is not necessarily the full value of a mixed or shielded transfer.</p></div>
