@@ -45,10 +45,12 @@ for (const dd of document.querySelectorAll('dd')) {
     const button = document.createElement('button')
     button.type = 'button'; button.className = 'sw-copy'; button.textContent = 'Copy'
     button.setAttribute('aria-label', 'Copy ' + (dd.previousElementSibling?.textContent.trim() || 'hash'))
-    button.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(value); button.textContent = 'Copied' }
-      catch (_) { button.textContent = 'Select to copy' }
-      setTimeout(() => { button.textContent = 'Copy' }, 2200)
+    button.addEventListener('click', () => {
+      navigator.clipboard.writeText(value).then(() => {
+        button.textContent = 'Copied'
+      }).catch(() => { button.textContent = 'Select to copy' }).finally(() => {
+        setTimeout(() => { button.textContent = 'Copy' }, 2200)
+      })
     })
     dd.append(button)
   }
@@ -63,5 +65,5 @@ function updateConnection() {
 }
 window.addEventListener('online', updateConnection)
 window.addEventListener('offline', updateConnection)
-new MutationObserver(updateConnection).observe(document.getElementById('explorer-content'), {attributes:true, subtree:true, attributeFilter:['class']})
+new MutationObserver(updateConnection).observe(document.getElementById('explorer-content') || document.body, {attributes:true, subtree:true, attributeFilter:['class']})
 updateConnection()

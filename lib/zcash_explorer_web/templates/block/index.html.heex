@@ -29,14 +29,13 @@
               </div>
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                Miner
+                First public coinbase recipient
                 </dt>
 
-                <a href={"/address/#{mined_by(@block_data.tx)}"}>
-                <dd class="mt-1 text-sm text-indigo-600 hover:text-indigo-400 break-words dark:text-indigo-200">
-                <%= mined_by @block_data.tx %>
+                <dd class="mt-1 text-sm break-words">
+                  <%= if mined_by(@block_data.tx) do %><a href={"/address/#{mined_by(@block_data.tx)}"}><%= mined_by @block_data.tx %></a><% else %>No public address<% end %>
+                  <p class="sw-note">This may be a protocol fund recipient. It does not identify a shielded miner.</p>
                 </dd>
-              </a>
               </div>
 
               <div class="sm:col-span-1">
@@ -73,7 +72,7 @@
               </div>
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                Input total
+                Public input total
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-50">
                 <%= input_total @block_data.tx %>  <%= @ticker %>
@@ -81,20 +80,13 @@
               </div>
               <div class="sm:col-span-1">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                Output total
+                Public output total
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 dark:text-gray-50">
                 <%= output_total @block_data.tx %>  <%= @ticker %>
                 </dd>
               </div>
-              <div class="sm:col-span-1">
-                <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                Output total
-                </dt>
-                <dd class="mt-1 text-sm text-gray-900 dark:text-gray-50">
-                <%= output_total @block_data.tx %> <%= @ticker %>
-                </dd>
-              </div>
+
 
               <%!-- SWARM addition: the four-way block reward split, read from
                     getblocksubsidy. Honey is the reward colour of the style
@@ -147,7 +139,7 @@
 
           <div class="py-3 flex justify-between text-sm font-medium">
             <dt class="text-gray-500 dark:text-gray-300">Difficulty</dt>
-            <dd class="text-gray-900 dark:text-gray-400"><%= @block_data.difficulty %></dd>
+            <dd class="text-gray-900 dark:text-gray-400"><%= ZcashExplorerWeb.Number.positive(@block_data.difficulty) %></dd>
           </div>
           <div class="py-3 flex justify-between text-sm font-medium">
             <dt class="text-gray-500 dark:text-gray-300">Size</dt>
@@ -177,7 +169,7 @@
             <div class="py-3 text-sm font-medium">
               <dt class="text-gray-500 dark:text-gray-300">Chainwork</dt>
               <dd class="text-gray-900 py-1 select-all break-words dark:text-gray-500">
-              <%= @block_data.chainwork %>
+              <%= @block_data.chainwork || "Unavailable from this node" %>
               </dd>
             </div>
           </div>

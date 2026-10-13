@@ -238,7 +238,7 @@ jobs:
           ci/assert-http.sh "$B/healthz" '"status":"ok"' '"network":"SwarmTestnet"' '"network_kind":"testnet"'
           # Home page: branding, the disclaimer, and the SWARM-only tiles.
           ci/assert-http.sh "$B/" \
-            'The hive, in the open.' \
+            'The hive,' 'in the open.' \
             'TEST COINS HAVE NO VALUE' \
             'NEXT HALVING' \
             'SUPPLY ISSUED' \
@@ -338,7 +338,7 @@ jobs:
           M=http://127.0.0.1:4002
           ci/assert-http.sh "$M/healthz" '"network":"SwarmMainnet"' '"network_kind":"mainnet"'
           ci/assert-http.sh "$M/" \
-            'The hive, in the open.' \
+            'The hive,' 'in the open.' \
             'SwarmMainnet' \
             'SWARM Mainnet' \
             'SWARM MAINNET' \

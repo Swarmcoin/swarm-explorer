@@ -22,6 +22,12 @@ defmodule ZcashExplorer.ExplorerMetricsTest do
     assert {:ok, [%{"info" => %{"fee" => 0}}]} = MempoolWarmer.normalize({:ok, %{"tx" => %{"fee" => 0}}})
   end
 
+  test "peer responses accept genuine empty lists and reject malformed entries" do
+    assert {:ok, []} = ZcashExplorer.Nodes.NodeWarmer.normalize({:ok, []})
+    assert {:ok, [%{}]} = ZcashExplorer.Nodes.NodeWarmer.normalize({:ok, [%{}]})
+    for result <- [{:ok, nil}, {:ok, %{}}, {:ok, [1]}, {:error, :timeout}], do: assert(match?({:error, _}, ZcashExplorer.Nodes.NodeWarmer.normalize(result)))
+  end
+
   test "freshness has an explicit age limit and rejects future/missing timestamps" do
     assert Snapshot.fresh?(100, 120, 20)
     refute Snapshot.fresh?(100, 121, 20)
