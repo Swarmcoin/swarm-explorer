@@ -16,11 +16,11 @@ defmodule ZcashExplorerWeb.RecentBlocksLive do
   @impl true
   def render(assigns) do
     ~L"""
-    <div class="sw-card overflow-hidden">
+    <div class="sw-card sw-feed overflow-hidden">
       <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid var(--sw-hairline);">
         <h3 class="font-display text-sm font-semibold">Latest blocks</h3>
         <span class="sw-mono text-[10.5px] tracking-[.14em]" style="color:var(--sw-honey);">
-          <span class="sw-live-dot inline-block align-middle mr-2"></span>LIVE
+          <span class="sw-live-dot inline-block align-middle mr-2"></span>AUTO REFRESH
         </span>
       </div>
 
@@ -28,7 +28,7 @@ defmodule ZcashExplorerWeb.RecentBlocksLive do
         <p class="px-5 py-6 text-sm" style="color:var(--sw-mid);">Waiting for the node&hellip;</p>
       <% end %>
 
-      <%= for block <- @block_cache do %>
+      <%= for block <- Enum.take(@block_cache, 6) do %>
         <a href="<%= "/blocks/#{block["height"]}" %>"
            class="flex items-center gap-4 px-5 py-3 no-underline"
            style="border-bottom:1px solid var(--sw-hairline-soft);">
@@ -47,7 +47,7 @@ defmodule ZcashExplorerWeb.RecentBlocksLive do
             <span class="block sw-mono text-[10.5px]" style="color:var(--sw-dim);"><%= block["time"] %></span>
           </span>
 
-          <span class="w-16 shrink-0"
+          <span class="sw-block-share w-16 shrink-0"
                 title="Share of this block's non-coinbase transactions that carry at least one shielded component. Blocks with only a coinbase show no share.">
             <span class="sw-shield-bar block">
               <span style="width: <%= BlockView.shielded_share_width(block["shielded_share"]) %>%"></span>

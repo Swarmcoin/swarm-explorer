@@ -23,7 +23,7 @@ defmodule ZcashExplorerWeb.BlockCountLive do
   end
 
   defp figures do
-    height = ZcashExplorer.Cache.field("metrics", "blocks")
+    height = ZcashExplorer.Snapshot.field("metrics", "blocks")
 
     [
       key: "BLOCK HEIGHT",
@@ -33,6 +33,6 @@ defmodule ZcashExplorerWeb.BlockCountLive do
     ]
   end
 
-  defp format(n) when is_integer(n), do: Integer.to_string(n)
+  defp format(n) when is_integer(n), do: ZcashExplorerWeb.Number.decimal(n, 0)
   defp format(_), do: "—"
 end

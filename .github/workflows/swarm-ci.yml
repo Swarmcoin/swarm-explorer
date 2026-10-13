@@ -5,7 +5,7 @@ name: SWARM explorer CI
 # about the fork is proven here or not at all.
 on:
   push:
-    branches: [swarm-testnet]
+    branches: [swarm-testnet, codex/explorer-redesign-20261013]
   workflow_dispatch:
 
 concurrency:
@@ -238,7 +238,7 @@ jobs:
           ci/assert-http.sh "$B/healthz" '"status":"ok"' '"network":"SwarmTestnet"' '"network_kind":"testnet"'
           # Home page: branding, the disclaimer, and the SWARM-only tiles.
           ci/assert-http.sh "$B/" \
-            'The hive, in the open.' \
+            'Network overview' 'swarm-product-mark.svg' 'Block activity' 'Hide coinbase' \
             'TEST COINS HAVE NO VALUE' \
             'NEXT HALVING' \
             'SUPPLY ISSUED' \
@@ -338,12 +338,12 @@ jobs:
           M=http://127.0.0.1:4002
           ci/assert-http.sh "$M/healthz" '"network":"SwarmMainnet"' '"network_kind":"mainnet"'
           ci/assert-http.sh "$M/" \
-            'The hive, in the open.' \
+            'Network overview' 'swarm-product-mark.svg' 'Block activity' 'Hide coinbase' \
             'SwarmMainnet' \
             'SWARM Mainnet' \
             'SWARM MAINNET' \
             '<title>SWARM Mainnet Explorer' \
-            'https://github.com/Swarm-Official'
+            'https://github.com/Swarmcoin/swarm-explorer'
 
           # Not one word of it anywhere on the page, in any casing. The one
           # exception is the ribbon's link to the testnet explorer, which is

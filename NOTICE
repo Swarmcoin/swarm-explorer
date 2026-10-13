@@ -205,3 +205,6 @@ explaining the reason at the point of the change.
      (templates/error/invalid_input.html.heex) that says what the box accepts.
      It replaced the string "Invalid input", and the block and address routes
      render it too, so no search can end in a 500.
+
+2026-10-13: SWARM explorer interface redesign; responsive navigation and detail surfaces, precise/fresh node metrics, validated mempool states, contiguous-header fractional solution-rate estimate, and regression coverage. Original SWARM identity and upstream notices retained.
+2026-10-13 revision: restore exact shipped SWARM product mark and small favicon from brand/swarm-mark/dist; replace decorative hero with compact explorer dashboard, block-size/transaction chart and coinbase filter. Brand asset paths preserved without redrawing.

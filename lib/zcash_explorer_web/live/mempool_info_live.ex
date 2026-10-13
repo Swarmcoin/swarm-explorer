@@ -23,12 +23,12 @@ defmodule ZcashExplorerWeb.MempoolInfoLive do
   end
 
   defp figures do
-    pending = ZcashExplorer.Cache.get("raw_mempool")
+    pending = ZcashExplorer.Snapshot.get("raw_mempool", nil, 20)
 
     [
       key: "MEMPOOL",
       value: if(is_list(pending), do: Integer.to_string(length(pending)), else: "—"),
-      note: "transactions waiting at this node",
+      note: ZcashExplorer.Snapshot.note("raw_mempool", if(pending == [], do: "Empty · no pending transactions", else: "Transactions waiting at this node")),
       accent: MetricCard.honey()
     ]
   end

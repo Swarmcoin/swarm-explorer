@@ -1,8 +1,1 @@
-<main class="py-4">
-<div class="grid grid-cols-1 mx-8">
- <h3 class="text-lg leading-6 font-medium text-gray-500 py-2">
-        Peers connected to this <%= @network_name %> node:
- </h3>
-    <%= live_render(@conn, ZcashExplorerWeb.NodesLive) %>
-</div>
-</main>
+<main class="sw-page"><div class="sw-page-heading"><a href="/" class="sw-eyebrow">EXPLORER / <%= @network_name %></a><h1>Node connections</h1><p>Peers reported by the node behind this explorer. This is not a count of every node or miner on SWARM.</p></div><%= live_render(@conn, ZcashExplorerWeb.NodesLive) %></main>

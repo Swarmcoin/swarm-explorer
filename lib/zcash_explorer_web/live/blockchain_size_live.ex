@@ -25,7 +25,7 @@ defmodule ZcashExplorerWeb.BlockChainSizeLive do
   defp figures do
     [
       key: "CHAIN ON DISK",
-      value: format(ZcashExplorer.Cache.field("metrics", "size_on_disk")),
+      value: format(ZcashExplorer.Snapshot.field("metrics", "size_on_disk")),
       note: "as this node stores it",
       accent: MetricCard.muted()
     ]

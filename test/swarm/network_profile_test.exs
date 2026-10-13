@@ -85,7 +85,7 @@ defmodule ZcashExplorer.NetworkProfileTest do
       configure(ctx, network_name: "SwarmMainnet")
       html = footer()
 
-      assert html =~ "https://github.com/Swarm-Official"
+      assert html =~ "https://github.com/Swarmcoin/swarm-explorer"
       refute html =~ "brs-holding"
     end
   end

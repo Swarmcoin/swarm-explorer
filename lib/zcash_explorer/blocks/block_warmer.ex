@@ -39,6 +39,9 @@ defmodule ZcashExplorer.Blocks.BlockWarmer do
           %{
             "height" => block_struct.height,
             "size" => block_struct.size,
+            "bits" => block_struct.bits,
+            "timestamp" => block_struct.time,
+            "previousblockhash" => block_struct.previousblockhash,
             "hash" => block_struct.hash,
             "time" => ZcashExplorerWeb.BlockView.mined_time(block_struct.time),
             "tx_count" => ZcashExplorerWeb.BlockView.transaction_count(block_struct.tx),
@@ -59,10 +62,10 @@ defmodule ZcashExplorer.Blocks.BlockWarmer do
   # ignores the warmer result in case of error
   defp handle_result({:error, reason}) do
     Logger.error("Error while warming the block cache.#{inspect(reason)}")
-    :ignore
+    ZcashExplorer.Snapshot.result("block_cache", {:error, reason})
   end
 
   defp handle_result(info) do
-    {:ok, [{"block_cache", info}]}
+    ZcashExplorer.Snapshot.result("block_cache", {:ok, info})
   end
 end

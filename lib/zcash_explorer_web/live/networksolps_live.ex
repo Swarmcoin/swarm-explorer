@@ -30,18 +30,8 @@ defmodule ZcashExplorerWeb.NetworkSolpsLive do
   end
 
   defp figures do
-    [
-      key: "NETWORK SOL/S",
-      value: format(ZcashExplorer.Cache.get("networksolps")),
-      note: "Equihash 200,9 solutions per second",
-      accent: MetricCard.success()
-    ]
+    reading = ZcashExplorer.Snapshot.get("networksolps", %{})
+    [key: "NETWORK SOL/S", value: ZcashExplorerWeb.Number.positive(reading["rate"]),
+     note: ZcashExplorer.Snapshot.note("networksolps", reading["source"] || "Estimate unavailable"), accent: MetricCard.muted()]
   end
-
-  # Zero is "the node has nothing to report", not a measurement.
-  defp format(solps) when is_number(solps) and solps > 0 do
-    :erlang.float_to_binary(solps + 0.0, [:compact, {:decimals, 2}])
-  end
-
-  defp format(_), do: "—"
 end

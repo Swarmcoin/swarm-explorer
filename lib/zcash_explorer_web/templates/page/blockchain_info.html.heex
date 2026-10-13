@@ -1,5 +1,1 @@
-<main class="py-4">
-<div class="grid grid-cols-1 mx-8">
- <%= live_render(@conn, ZcashExplorerWeb.BlockChainInfoLive) %>
-</div>
-</main>
+<main class="sw-page"><div class="sw-page-heading"><a href="/" class="sw-eyebrow">EXPLORER / <%= @network_name %></a><h1>A public view of shielded pools</h1><p>Pool totals are public accounting. Individual shielded senders, receivers and amounts remain hidden.</p></div><%= live_render(@conn, ZcashExplorerWeb.BlockChainInfoLive) %></main>

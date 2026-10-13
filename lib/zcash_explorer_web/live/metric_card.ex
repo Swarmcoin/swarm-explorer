@@ -14,12 +14,12 @@ defmodule ZcashExplorerWeb.MetricCard do
   @doc "Renders one metric card."
   def card(assigns) do
     ~L"""
-    <div class="sw-metric">
+    <div class="sw-metric" data-unavailable="<%= @value == "—" %>">
       <div class="sw-metric-flow"
            style="background:linear-gradient(90deg, transparent, <%= @accent %>, transparent);"></div>
       <div class="sw-key"><%= @key %></div>
       <div class="sw-value"><%= @value %></div>
-      <div class="sw-note" style="color:<%= @accent %>;"><%= @note %></div>
+      <div class="sw-note"><%= @note %></div>
     </div>
     """
   end

@@ -25,14 +25,11 @@ defmodule ZcashExplorerWeb.DifficultyLive do
   defp figures do
     [
       key: "DIFFICULTY",
-      value: format(ZcashExplorer.Cache.field("metrics", "difficulty")),
-      note: "retargeted every block",
+      value: format(ZcashExplorer.Snapshot.field("metrics", "difficulty")),
+      note: ZcashExplorer.Snapshot.note("metrics", "Retargeted every block"),
       accent: MetricCard.muted()
     ]
   end
 
-  defp format(d) when is_number(d),
-    do: :erlang.float_to_binary(d + 0.0, [:compact, {:decimals, 6}])
-
-  defp format(_), do: "—"
+  defp format(d), do: ZcashExplorerWeb.Number.positive(d)
 end
